@@ -40,11 +40,6 @@ function model_performance(parameter_guess_array,index)
     # Load the data dictionary (uses the default biophysical_constants file)
     model_data_dictionary = build_data_dictionary((time_start,time_stop,time_step_size), path_to_biophysical_constants_file, host_type)
 
-    # update the paramaters in the model data dictionary -
-    # for now - lets only search over dG's -
-    R = model_data_dictionary["R"]
-    T_K = model_data_dictionary["T_K"]
-
     # what is the size of the parameter_guess_array?
     number_of_parameters = length(parameter_guess_array)
 
@@ -102,7 +97,7 @@ function model_performance(parameter_guess_array,index)
 			0.0	;	# 3	sigma_70
 			parameter_guess_array[16]	;	# 4	mRNA_GntR #unknown
 			parameter_guess_array[17]	;	# 5	mRNA_deGFP
-			0.0							;	# 6	mRNA_sigma_70
+			1.0							;	# 6	mRNA_sigma_70
 			parameter_guess_array[18]	;	# 7	protein_GntR #unknown
 			parameter_guess_array[19]	;	# 8	protein_deGFP
 			parameter_guess_array[20]	;	# 9	protein_sigma_70
@@ -169,32 +164,32 @@ function main(index)
 
 	        # dG's -
 			39995.69565886529 68282.2841495398      ;   # 1 W_GntR_RNAP
-	        -50000.0 25000.0  						;   # 2 W_GntR_sigma_70
+	        -25000.0 25000.0  						;   # 2 W_GntR_sigma_70
 			39995.69565886529 68282.2841495398  	;   # 3 W_deGFP_RNAP
-			-50000.0 25000.0  						;	# 4 W_deGFP_sigma_70
-			-50000.0 25000.0   			  			;   # 5 W_deGFP_GntR
+			-25000.0 25000.0  						;	# 4 W_deGFP_sigma_70
+			-25000.0 25000.0   			  			;   # 5 W_deGFP_GntR
 			# W_sigma_70_RNAP = 0.0
 
 	        # binding parameters -
-			0.5 2 				   	; #6  n_GntR_sigma_70
-			0.5 1 				; #7  K_GntR_sigma_70
-			0.5 2   	; #8  n_deGFP_sigma_70
+			0.5 1 	; #6  n_GntR_sigma_70
+			0.5 1 	; #7  K_GntR_sigma_70
+			0.5 1   ; #8  n_deGFP_sigma_70
 			0.5 1  	; #9  K_deGFP_sigma_70
-			0.5 2        			; #10 n_deGFP_GntR
-			0.5 1         		; #11 K_deGFP_GntR
+			0.5 1   ; #10 n_deGFP_GntR
+			0.5 1   ; #11 K_deGFP_GntR
 
 	        # time constants -
-			0.0001 50.0							;	# 12	mRNA_GntR #unknown
-			0.0039273045649573235 7.17667775643900 	;	# 13	mRNA_deGFP
-			0.0001 50.0							;	# 14	protein_GntR #unknown
-			0.35035678021027006 10.203484322453043  ;	# 15	protein_deGFP
+			0.001 10.0	;	# 12	mRNA_GntR #unknown
+			0.001 7.18 	;	# 13	mRNA_deGFP
+			0.001 10.0	;	# 14	protein_GntR #unknown
+			0.35 10.0   ;	# 15	protein_deGFP
 
 	        # degradation mods -
-			0.1 2.0	;	# 16	mRNA_GntR #unknown
-			0.1 2.0	;	# 17	mRNA_deGFP
-			0.1 2.0 	;	# 18	protein_GntR #unknown
-			0.1 2.0 	;	# 19	protein_deGFP
-			0.1 2.0 	;	# 20	protein_sigma_70
+			0 1.0	;	# 16	mRNA_GntR #unknown
+			0 1.0	;	# 17	mRNA_deGFP
+			0 1.0 	;	# 18	protein_GntR #unknown
+			0 1.0 	;	# 19	protein_deGFP
+			0 1.0 	;	# 20	protein_sigma_70
 
 	    ];
 
@@ -202,20 +197,14 @@ function main(index)
 
 	number_of_parameters = size(sample_bounds_array)[1]
 			for parameter_index = 1:(number_of_parameters)
-				#display(parameter_index)
 				# get row of parameters -
 				lb = sample_bounds_array[parameter_index,1]
 				ub = sample_bounds_array[parameter_index,2]
 
-				#display(lb)
-				#display(ub)
 				# create the tuple -
 				tmp_tuple = (lb,ub)
-				#display(tmp_tuple)
 				# cache -
 				push!(parameter_bounds_array,tmp_tuple)
-				#parameter_bounds_array[parameter_index] = tmp_tuple
-				#display(parameter_bounds_array)
 			end
 #size(parameter_bounds_array)
     # do the global sensitivity analysis -
@@ -251,3 +240,4 @@ end
 results_array = results_array[:,2:end]
 
 scaled_array = mean_center_array(results_array)
+
