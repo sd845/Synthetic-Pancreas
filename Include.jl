@@ -40,6 +40,7 @@ using LinearAlgebra # pre-installed w/Julia
 using Statistics    # pre-installed w/Julia
 using Pkg           # pre-installed w/Julia
 using DiffEqSensitivity
+using NumericalIntegration
 installed_package_set = keys(Pkg.installed())
 
 # Do we have DifferentialEquations?
