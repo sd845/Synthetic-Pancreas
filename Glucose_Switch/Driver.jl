@@ -1,0 +1,74 @@
+# ----------------------------------------------------------------------------------- #
+# Copyright (c) 2019 Varnerlab
+# Robert Frederick School of Chemical and Biomolecular Engineering
+# Cornell University, Ithaca NY 14850
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+# ----------------------------------------------------------------------------------- #
+
+# include -
+include("Include.jl")
+
+# Script to solve the balance equations -
+time_start = 0.0
+time_stop = 16.0
+time_step_size = 0.01
+
+# what is the host_type?
+host_type = :cell_free
+
+# path to parameters -
+path_to_biophysical_constants_file = "./CellFree.json"
+
+# defining range of gluconate parameter values
+p_range = range(0,stop = 10, length = 100)
+
+# Initializing gfp and rfp for steady state
+gfp = zeros(length(p_range))
+rfp = zeros(length(p_range))
+
+# looping through the range of gluconate parameter values
+for i in 1:length(p_range)
+
+    # Load the data dictionary (uses the default biophysical_constants file)
+    data_dictionary = build_data_dictionary((time_start,time_stop,time_step_size), path_to_biophysical_constants_file, host_type)
+    gluconate_parameter_dictionary = data_dictionary["gluconate_parameter_dictionary"]
+    gluconate_parameter_dictionary["gluconate_concentration"] = p_range[i]
+    # Solve the model equations -
+    #(T,X) = SolveBalances(time_start,time_stop,time_step_size,data_dictionary)
+    XSS = estimate_steady_state(data_dictionary)
+
+    #gfp[i] = X[end,13]
+    #rfp[i] = X[end,15]
+    gfp[i] = XSS[13]
+    rfp[i] = XSS[15]
+    #gfp[i] = integrate(T,X[:,13])
+    #rfp[i] = integrate(T,X[:,15])
+
+end
+
+using Plots
+plot(p_range[2:end],gfp[2:end]/maximum(gfp),label = "GFPssrA",xaxis = "Gluconate",yaxis = "Scaled protein", legend = :right)
+plot!(p_range[2:end],rfp[2:end]/maximum(rfp),label = "RFPssrA")
+#Plots.savefig("Result.pdf")
+
+# using DelimitedFiles
+ open("Results.csv", "w") do io
+           writedlm(io, [p_range gfp/maximum(gfp) rfp/maximum(rfp)], ",")
+ end
