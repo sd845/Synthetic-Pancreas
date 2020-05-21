@@ -4,4 +4,4 @@ This code was generated using the JuGRN code generator in Julia from the Varnerl
 
 The folder Glucose_Switch contains code for the complete circuit and the folder Sub-circuit contains code for the GntR-GFP sub-circuit.
 
-To execute code, run include("Driver.jl") in the Julia REPL.
+To execute code, move to the working directory in the Julia REPL and run command include("Driver.jl").
