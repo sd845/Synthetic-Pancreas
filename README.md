@@ -2,4 +2,6 @@ This repository contains code for the synthetic pancreas circuit models written 
 
 This code was generated using the JuGRN code generator in Julia from the Varnerlab GitHub Repository. Julia v1.4 must be installed to run this code. In addition, the following packages are required: DifferentialEquations.jl, DiffEqSensitivity.jl, NumericalIntegration.jl, DelimitedFiles.jl, JSON.jl, DataFrames.jl, LinearAlgebra.jl, PyPlot.jl
 
+The folder Glucose_Switch contains code for the complete circuit and the folder Sub-circuit contains code for the GntR-GFP sub-circuit.
+
 To execute code, run include("Driver.jl") in the Julia REPL.
